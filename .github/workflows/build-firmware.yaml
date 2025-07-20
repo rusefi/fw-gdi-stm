@@ -1,0 +1,28 @@
+name: Build GDI-STM
+
+on: 
+  push:
+  pull_request:
+
+jobs:
+  build-firmware:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+        with:
+          submodules: recursive
+
+      - name: Acquire GCC
+        uses: carlosperate/arm-none-eabi-gcc-action@v1
+        with:
+          release: '12.3.Rel1'
+
+      # Make sure the compiler we just downloaded works - just print out the version
+      - name: Test Compiler
+        run: arm-none-eabi-gcc -v
+
+      - name: Discover cores
+        if: ${{ matrix.os != 'macos-latest' }}
+        run: lscpu | egrep 'Model name|Socket|Thread|NUMA|CPU\(s\)'
+
